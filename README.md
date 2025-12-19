@@ -26,6 +26,7 @@ API Buddy 并不试图“抽象 HTTP”，而是**直接实现 HTTP 协议本身
 
 * **Markdown 作为输入**：
   使用 `.md` 文件描述 API endpoint，使 API 文档即测试载荷（Documentation = Payload）。
+  ⚡ **新增功能：** 现在可以在 `.md` 文件中定义 HTTP headers（示例见 [`PAYLOAD.md`](./PAYLOAD.md)）。
 
 * **跨平台**：
   目标平台包括 Linux、Windows 和 macOS。
@@ -85,6 +86,7 @@ Rather than abstracting HTTP away, API Buddy **implements the HTTP protocol dire
 
 * **Markdown as input**
   `.md` files are used to describe API endpoints, making documentation itself the executable payload.
+  ⚡ **New feature:** You can now define HTTP headers directly in the `.md` file (see [`PAYLOAD.md`](./PAYLOAD.md) example).
 
 * **Cross-platform**
   Designed to run on Linux, Windows, and macOS.

@@ -37,6 +37,8 @@ int http_request(
     const char *path,
     const char *body,
     int body_len,
+    struct http_header *headers,
+    int headers_count,
     struct http_response *resp
 ) {
     int sock;
@@ -59,27 +61,38 @@ int http_request(
         return -1;
     }
 
-    /* ==== REQUEST ==== */
-
+    /* ==== REQUEST LINE ==== */
     const char *m = method_str(method);
-
     b_memcpy(req+len, m, b_strlen(m)); len += b_strlen(m);
-    b_memcpy(req+len, " ", 1); len++;
+    req[len++] = ' ';
     b_memcpy(req+len, path, b_strlen(path)); len += b_strlen(path);
     b_memcpy(req+len, " HTTP/1.1\r\n", 11); len += 11;
 
+    /* ==== HOST HEADER ==== */
     b_memcpy(req+len, "Host: ", 6); len += 6;
     b_memcpy(req+len, host, b_strlen(host)); len += b_strlen(host);
     b_memcpy(req+len, "\r\n", 2); len += 2;
 
+    /* ==== CUSTOM HEADERS ==== */
+    for (int i = 0; i < headers_count; i++) {
+        b_memcpy(req+len, headers[i].name, b_strlen(headers[i].name)); len += b_strlen(headers[i].name);
+        req[len++] = ':';
+        req[len++] = ' ';
+        b_memcpy(req+len, headers[i].value, b_strlen(headers[i].value)); len += b_strlen(headers[i].value);
+        b_memcpy(req+len, "\r\n", 2); len += 2;
+    }
+
+    /* ==== CONTENT-LENGTH IF BODY ==== */
     if (body && body_len > 0) {
         b_memcpy(req+len, "Content-Length: ", 16); len += 16;
         len += b_itoa(body_len, req+len);
         b_memcpy(req+len, "\r\n", 2); len += 2;
     }
 
+    /* ==== CONNECTION CLOSE ==== */
     b_memcpy(req+len, "Connection: close\r\n\r\n", 21); len += 21;
 
+    /* ==== BODY ==== */
     if (body && body_len > 0) {
         b_memcpy(req+len, body, body_len);
         len += body_len;
@@ -87,14 +100,12 @@ int http_request(
 
     sys_write(sock, req, len);
 
-    /* ==== RESPONSE: HEADERS ==== */
-
+    /* ==== RESPONSE HEADERS ==== */
     while ((r = read(sock, res+total, RES_BUF-total)) > 0) {
         total += r;
-
         for (int i = 0; i < total-3; i++) {
-            if (res[i]=='\r'&&res[i+1]=='\n'&&
-                res[i+2]=='\r'&&res[i+3]=='\n') {
+            if (res[i]=='\r' && res[i+1]=='\n' &&
+                res[i+2]=='\r' && res[i+3]=='\n') {
                 header_end = i + 4;
                 goto headers_done;
             }
@@ -102,14 +113,12 @@ int http_request(
     }
 
 headers_done:
-
     if (header_end < 0) {
         close(sock);
         return -1;
     }
 
     /* ==== PARSE CONTENT-LENGTH ==== */
-
     char *cl = b_strstr(res, "Content-Length:");
     if (cl) {
         cl += 15;
@@ -120,9 +129,7 @@ headers_done:
     }
 
     /* ==== READ BODY ==== */
-
     int body_read = total - header_end;
-
     while (body_read < content_len && total < RES_BUF) {
         r = read(sock, res+total, RES_BUF-total);
         if (r <= 0) break;
@@ -133,7 +140,6 @@ headers_done:
     close(sock);
 
     /* ==== RESPONSE STRUCT ==== */
-
     resp->raw = res;
     resp->raw_len = total;
     resp->status = parse_status(res, total);
@@ -142,4 +148,3 @@ headers_done:
 
     return 0;
 }
-

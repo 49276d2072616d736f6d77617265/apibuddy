@@ -18,6 +18,12 @@ struct http_response {
     int raw_len;
 };
 
+struct http_header {
+    const char *name;
+    const char *value;
+};
+
+
 int http_request(
     enum http_method method,
     const char *ip,
@@ -26,6 +32,8 @@ int http_request(
     const char *path,
     const char *body,
     int body_len,
+    struct http_header *headers,
+    int headers_count,
     struct http_response *resp
 );
 
