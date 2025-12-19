@@ -3,13 +3,13 @@
 
 #include "types.h"
 
-size_t strlen(const char *s);
-int    strcmp(const char *a, const char *b);
-int    strncmp(const char *a, const char *b, size_t n);
+ssize_t b_strlen(const char *s);
+int     b_strcmp(const char *a, const char *b);
+int     b_strncmp(const char *a, const char *b, ssize_t n);
+char   *b_strchr(const char *s, int c);
+char   *b_strstr(const char *h, const char *n);
 
-void  *memcpy(void *dst, const void *src, size_t n);
-void  *memset(void *dst, int c, size_t n);
-
-char  *strchr(const char *s, int c);
+void   *b_memcpy(void *dst, const void *src, ssize_t n);
+void   *b_memset(void *dst, int c, ssize_t n);
 
 #endif

@@ -1,6 +1,6 @@
 #include "libc/num.h"
 
-int atoi(const char *s) {
+int b_atoi(const char *s) {
     int r = 0;
     while (*s >= '0' && *s <= '9') {
         r = r * 10 + (*s - '0');
@@ -9,7 +9,7 @@ int atoi(const char *s) {
     return r;
 }
 
-void itoa(int v, char *buf) {
+int b_itoa(int v, char *buf) {
     char tmp[16];
     int i = 0, neg = 0;
 
@@ -28,9 +28,11 @@ void itoa(int v, char *buf) {
     int j = 0;
     while (i--) buf[j++] = tmp[i];
     buf[j] = 0;
+
+    return j;
 }
 
-void utoa(unsigned int v, char *buf) {
+int b_utoa(unsigned int v, char *buf) {
     char tmp[16];
     int i = 0;
 
@@ -42,9 +44,11 @@ void utoa(unsigned int v, char *buf) {
     int j = 0;
     while (i--) buf[j++] = tmp[i];
     buf[j] = 0;
+
+    return j;
 }
 
-void utohex(unsigned long v, char *buf) {
+int b_utohex(unsigned long v, char *buf) {
     const char *hex = "0123456789abcdef";
     char tmp[16];
     int i = 0;
@@ -60,4 +64,6 @@ void utohex(unsigned long v, char *buf) {
     int j = 2;
     while (i--) buf[j++] = tmp[i];
     buf[j] = 0;
+
+    return j;
 }

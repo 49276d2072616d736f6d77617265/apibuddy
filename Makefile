@@ -11,19 +11,24 @@ SRC = \
 	core/http/http.c \
 	core/parsing/markdown.c
 
-OBJ = $(SRC:.c=.o)
+OBJDIR = build
+OUTDIR = out
 
-OUT = apibuddy
+OBJ = $(patsubst %.c,$(OBJDIR)/%.o,$(SRC))
+
+OUT = $(OUTDIR)/apibuddy
 
 all: $(OUT)
 
 $(OUT): $(OBJ)
+	@mkdir -p $(OUTDIR)
 	$(CC) $(OBJ) -o $(OUT) $(LDFLAGS)
 
-%.o: %.c
+$(OBJDIR)/%.o: %.c
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJ) $(OUT)
+	rm -rf $(OBJDIR) $(OUTDIR)
 
 .PHONY: all clean

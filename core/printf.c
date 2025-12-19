@@ -11,7 +11,7 @@ void b_putchar(char c) {
 }
 
 void b_print(const char *s) {
-    sys_write(1, s, strlen(s));
+    sys_write(1, s, b_strlen(s));
 }
 
 void b_println(const char *s) {
@@ -37,13 +37,13 @@ void b_printf(const char *fmt, ...) {
             char *s = va_arg(ap, char*);
             b_print(s);
         } else if (*fmt == 'd') {
-            itoa(va_arg(ap, int), buf);
+            b_itoa(va_arg(ap, int), buf);
             b_print(buf);
         } else if (*fmt == 'u') {
-            utoa(va_arg(ap, unsigned int), buf);
+            b_utoa(va_arg(ap, unsigned int), buf);
             b_print(buf);
         } else if (*fmt == 'x') {
-            utohex(va_arg(ap, unsigned long), buf);
+            b_utohex(va_arg(ap, unsigned long), buf);
             b_print(buf);
         } else if (*fmt == 'c') {
             b_putchar((char)va_arg(ap, int));
